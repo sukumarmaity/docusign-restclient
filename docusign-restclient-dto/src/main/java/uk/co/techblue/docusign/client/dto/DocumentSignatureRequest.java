@@ -17,16 +17,18 @@ package uk.co.techblue.docusign.client.dto;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import uk.co.techblue.docusign.client.dto.recipients.RecipientCollection;
 
 /**
  * The Class DocumentSignatureRequest.
  */
-@JsonSerialize(include = Inclusion.NON_NULL)
+@JsonSerialize
+@JsonInclude(value = Include.NON_NULL)
 public class DocumentSignatureRequest extends SignatureRequest {
 
     /** The Constant serialVersionUID. */
@@ -51,6 +53,10 @@ public class DocumentSignatureRequest extends SignatureRequest {
     /** The brand id. */
     @JsonProperty
     private String brandId;
+
+    /** The envelope email settings. */
+    @JsonProperty(value = "emailSettings")
+    private EnvelopeEmailSetting envelopeEmailSettings;
 
     /**
      * Gets the documents.
@@ -143,6 +149,24 @@ public class DocumentSignatureRequest extends SignatureRequest {
      */
     public void setBrandId(final String brandId) {
         this.brandId = brandId;
+    }
+
+    /**
+     * Gets the envelope email settings.
+     * 
+     * @return the envelope email settings
+     */
+    public EnvelopeEmailSetting getEnvelopeEmailSettings() {
+        return envelopeEmailSettings;
+    }
+
+    /**
+     * Sets the envelope email settings.
+     * 
+     * @param envelopeEmailSettings the new envelope email settings
+     */
+    public void setEnvelopeEmailSettings(EnvelopeEmailSetting envelopeEmailSettings) {
+        this.envelopeEmailSettings = envelopeEmailSettings;
     }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 Technology Blueprint Ltd
+ * Copyright 2015 Technology Blueprint Ltd
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package uk.co.techblue.docusign.client.dto;
+package uk.co.techblue.docusign.client.dto.recipients;
 
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import uk.co.techblue.docusign.client.dto.BaseDto;
 
-/**
- * The Class AuditEventsResponse.
- */
-public class AuditEventsResponse  extends BaseDto  {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1713401971162965662L;
+public class RecipientUpdateResults extends BaseDto {
 
-	/** The envelopes. */
-	@JsonProperty
-	private List<AuditEvent> auditEvents;
+    private static final long serialVersionUID = 6697836644932062658L;
+    
+    @JsonProperty
+    private List<RecipientResult> recipientUpdateResults;
 
-	public List<AuditEvent> getAuditEvents() {
-		return auditEvents;
-	}
+    /**
+     * @return the recipientUpdateResults
+     */
+    public List<RecipientResult> getRecipientUpdateResults() {
+        return recipientUpdateResults;
+    }
+
+    /**
+     * @param recipientUpdateResults the recipientUpdateResults to set
+     */
+    public void setRecipientUpdateResults(List<RecipientResult> recipientUpdateResults) {
+        this.recipientUpdateResults = recipientUpdateResults;
+    }
+
 }

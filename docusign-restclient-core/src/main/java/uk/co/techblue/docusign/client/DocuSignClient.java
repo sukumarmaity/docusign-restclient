@@ -26,10 +26,15 @@ import javax.ws.rs.ext.Provider;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -37,9 +42,11 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
-import org.jboss.resteasy.logging.Logger;
+//import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.co.techblue.docusign.client.credential.DocuSignCredentials;
 import uk.co.techblue.docusign.client.utils.DocuSignUtils;
@@ -55,36 +62,15 @@ import uk.co.techblue.docusign.resteasy.providers.DocumentFileProvider;
  *    docusign.https.proxyPort=listening port of the proxy
  */
 public class DocuSignClient {
-	public static void main(String[] args) throws ClientProtocolException,
-			IOException {
-		ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager();
-		int maxPerRoute = 50;
-		cm.setDefaultMaxPerRoute(maxPerRoute);
-		cm.setMaxTotal(maxPerRoute);
+	
 
-		HttpClient client = new DefaultHttpClient(cm);
-		HttpParams params = client.getParams();
-		// Allowable time between packets
-		HttpConnectionParams.setSoTimeout(params, 6000);
-		// Allowable time to get a connection
-		HttpConnectionParams.setConnectionTimeout(params, 6000);
-
-		HttpGet request = new HttpGet(
-				"https://demo.docusign.net/restapi/v2/accounts/672084/envelopes/e266ddb9-b293-4013-98fd-c121b7832d4a/audit_events");
-		request.setHeader("Authorization",
-				"bearer D/rZd4fBhOpg2r0VTipQC105ARE=");
-		HttpResponse response = client.execute(request);
-
-		System.out.println(response);
-	}
-
-	private final static Logger logger = Logger.getLogger(DocuSignClient.class);
 	private final static String PROXY_HOST_PROPERTY = "docusign.https.proxyHost";
 	private final static String PROXY_PORT_PROPERTY = "docusign.https.proxyPort";
 	private final static String CONNECTION_TIMEOUT = "docusign.connection.timeout";
 	private static final String CONNECTION_DEFAULT_MAX_PER_ROUTE = "docusign.max.per.route";
 	private final static String CONNECTION_URL = "docusign.connection.port.redirect";
 	private static HttpClientConfiguration httpClientConfiguration;
+	private final static Logger logger = LoggerFactory.getLogger(DocuSignClient.class);
 	
 	private static HttpClient client = null;
 
@@ -221,12 +207,12 @@ public class DocuSignClient {
 		if (client == null) {
 			synchronized (DocuSignClient.class) {
 				if (client == null) {
-					ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager();
+				    PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
 					
 					int maxPerRoute = httpClientConfiguration.getDefaultMaxPerRoute();
 					cm.setDefaultMaxPerRoute(maxPerRoute);
 					cm.setMaxTotal(maxPerRoute);
-					client = new DefaultHttpClient(cm);
+					client = HttpClientBuilder.create().setConnectionManager(cm).build();
 
 					int timeout = httpClientConfiguration.getTimeout();
 					String proxyHost = httpClientConfiguration.getProxyHost();

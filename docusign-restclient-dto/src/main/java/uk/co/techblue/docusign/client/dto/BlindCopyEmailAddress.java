@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 Technology Blueprint Ltd
+ * Copyright 2015 Technology Blueprint Ltd
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  ******************************************************************************/
 package uk.co.techblue.docusign.client.dto;
 
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -23,21 +22,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
- * The class to send data for signature request via template.
+ * The Class BlindCopyEmailAddress.
  */
-@SuppressWarnings("serial")
 @JsonSerialize
 @JsonInclude(value = Include.NON_NULL)
-public class CompositeTemplateSignatureRequest extends TemplateSignatureRequest {
+public class BlindCopyEmailAddress extends BaseDto {
 
-    @JsonProperty("compositeTemplates")
-    private List<CompositeTemplate> compositeTemplates;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = -7568024643872377290L;
 
-    public List<CompositeTemplate> getCompositeTemplates() {
-        return compositeTemplates;
+    /** The email. */
+    @JsonProperty
+    private String email;
+
+    /**
+     * Gets the email.
+     * 
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
     }
 
-    public void setCompositeTemplates(List<CompositeTemplate> compositeTemplates) {
-        this.compositeTemplates = compositeTemplates;
+    /**
+     * Sets the email.
+     * 
+     * @param email the new email
+     */
+    public void setEmail(String email) {
+        this.email = email;
     }
+
 }

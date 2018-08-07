@@ -17,9 +17,11 @@ package uk.co.techblue.docusign.client.dto.recipients;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import uk.co.techblue.docusign.client.dto.DocumentTabCollection;
 import uk.co.techblue.docusign.client.dto.SignatureInfo;
@@ -29,7 +31,8 @@ import uk.co.techblue.docusign.client.dto.SignatureInfo;
  * form fields on the documents in the envelope.
  */
 @SuppressWarnings("serial")
-@JsonSerialize(include = Inclusion.NON_NULL)
+@JsonSerialize
+@JsonInclude(value = Include.NON_NULL)
 public class Signer extends Recipient {
 	/** The host email. */
 	@JsonProperty
@@ -58,6 +61,9 @@ public class Signer extends Recipient {
 	/** Excluded documents. */
 	@JsonProperty
 	private List<String> excludedDocuments;
+
+    @JsonIgnore
+    private List<Long> letterIds;
 
 	/** 
 	 * Gets the list of excluded documents (list of IDs)
@@ -197,4 +203,12 @@ public class Signer extends Recipient {
 	public void setTabs(DocumentTabCollection tabs) {
 		this.tabs = tabs;
 	}
+	
+	public List<Long> getLetterIds() {
+        return letterIds;
+    }
+
+    public void setLetterIds(final List<Long> letterIds) {
+        this.letterIds = letterIds;
+    }
 }

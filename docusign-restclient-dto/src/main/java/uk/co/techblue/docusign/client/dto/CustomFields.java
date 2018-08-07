@@ -2,7 +2,7 @@ package uk.co.techblue.docusign.client.dto;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The Class CustomFields.

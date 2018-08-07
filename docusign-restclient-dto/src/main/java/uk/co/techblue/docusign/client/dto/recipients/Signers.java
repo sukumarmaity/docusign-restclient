@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 Technology Blueprint Ltd
+ * Copyright 2015 Technology Blueprint Ltd
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package uk.co.techblue.docusign.client.dto;
+package uk.co.techblue.docusign.client.dto.recipients;
 
 import java.util.List;
 
@@ -22,22 +22,32 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-/**
- * The class to send data for signature request via template.
- */
-@SuppressWarnings("serial")
+import uk.co.techblue.docusign.client.dto.BaseDto;
+
 @JsonSerialize
 @JsonInclude(value = Include.NON_NULL)
-public class CompositeTemplateSignatureRequest extends TemplateSignatureRequest {
+public class Signers extends BaseDto {
 
-    @JsonProperty("compositeTemplates")
-    private List<CompositeTemplate> compositeTemplates;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5490448065061151375L;
+    
+    @JsonProperty
+    private List<RecipientUpdateDetails> signers;
 
-    public List<CompositeTemplate> getCompositeTemplates() {
-        return compositeTemplates;
+    /**
+     * @return the signers
+     */
+    public List<RecipientUpdateDetails> getSigners() {
+        return signers;
     }
 
-    public void setCompositeTemplates(List<CompositeTemplate> compositeTemplates) {
-        this.compositeTemplates = compositeTemplates;
+    /**
+     * @param signers the signers to set
+     */
+    public void setSigners(List<RecipientUpdateDetails> signers) {
+        this.signers = signers;
     }
+
 }

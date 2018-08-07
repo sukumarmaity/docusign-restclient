@@ -31,6 +31,8 @@ import uk.co.techblue.docusign.client.BaseService;
 import uk.co.techblue.docusign.client.credential.DocuSignCredentials;
 import uk.co.techblue.docusign.client.dto.*;
 import uk.co.techblue.docusign.client.dto.recipients.RecipientStatusCollection;
+import uk.co.techblue.docusign.client.dto.recipients.RecipientUpdateResults;
+import uk.co.techblue.docusign.client.dto.recipients.Signers;
 import uk.co.techblue.docusign.client.dto.user.LoginAccount;
 import uk.co.techblue.docusign.client.envelope.attributes.Status;
 import uk.co.techblue.docusign.client.exception.EnvelopeException;
@@ -369,6 +371,18 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
             throws EnvelopeException {
         final ClientResponse<RecipientStatusCollection> clientResponse = resourceProxy.getRecipientStatus(envelopeId, includeTabs,
             includeExtended);
+        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+    }
+    
+    /**
+     * Modify or Correct and Resend Recipient Information.
+     * 
+     * @param envelopeId the envelope id
+     * @param signersList the list of signers
+     * @throws EnvelopeException the envelope exception
+     */
+    public RecipientUpdateResults resendEnvelope(final String envelopeId, final boolean resendEnvelope, final Signers signersList) throws EnvelopeException {
+        final ClientResponse<RecipientUpdateResults> clientResponse = resourceProxy.resendEnvelope(envelopeId, resendEnvelope, signersList);
         return parseEntityFromResponse(clientResponse, EnvelopeException.class);
     }
 

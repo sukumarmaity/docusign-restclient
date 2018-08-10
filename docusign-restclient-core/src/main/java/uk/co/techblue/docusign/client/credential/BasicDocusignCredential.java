@@ -16,7 +16,8 @@
 package uk.co.techblue.docusign.client.credential;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
 
 import uk.co.techblue.docusign.client.dto.BaseDto;
 import uk.co.techblue.docusign.client.utils.DocuSignConstants;
@@ -219,8 +220,10 @@ public class BasicDocusignCredential extends BaseDto implements DocuSignCredenti
      * @see uk.co.techblue.docusign.client.credential.DocuSignCredentials#setHeader(org.jboss.resteasy.client.ClientRequest)
      */
     @Override
-    public void setHeader(final ClientRequest request) {
-        request.header(DocuSignConstants.HEADER_PARAM_AUTHENTICATION, this);
+    public void setHeader(final ClientInvocation request) {
+        ClientRequestHeaders headers = new ClientRequestHeaders(request.getClientConfiguration());
+        headers.header(DocuSignConstants.HEADER_PARAM_AUTHENTICATION, this);
+        request.setHeaders(headers);
     }
 
     @Override

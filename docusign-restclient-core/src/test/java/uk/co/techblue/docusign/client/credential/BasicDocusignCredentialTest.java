@@ -32,7 +32,7 @@ public class BasicDocusignCredentialTest {
         ClientRequest request = new ClientRequest("uriTemplate");
         // make sure auth header is not set
         Assert.assertNull(request.getHeaders().getFirst(DocuSignConstants.HEADER_PARAM_AUTHENTICATION));
-        credential.setHeader(request);
+//        credential.setHeader(request);
         // verify auth header was set
         Assert.assertEquals(getCredentialString(), request.getHeaders().getFirst(DocuSignConstants.HEADER_PARAM_AUTHENTICATION));
     }

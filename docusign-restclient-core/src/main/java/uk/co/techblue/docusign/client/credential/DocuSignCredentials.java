@@ -15,7 +15,7 @@
  ******************************************************************************/
 package uk.co.techblue.docusign.client.credential;
 
-import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 
 /**
  * The Interface DocuSignCredentials.
@@ -29,7 +29,7 @@ public interface DocuSignCredentials {
      * 
      * @param request the new header
      */
-    public void setHeader(ClientRequest request);
+    public void setHeader(ClientInvocation request);
 
     /**
      * Gets the username.

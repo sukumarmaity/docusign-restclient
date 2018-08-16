@@ -37,7 +37,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.james.mime4j.field.FieldName;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
 
 import uk.co.techblue.docusign.client.dto.DocumentFile;
@@ -47,154 +47,157 @@ import uk.co.techblue.docusign.client.dto.DocumentFile;
 @Consumes("*/*")
 public class DocumentFileProvider implements MessageBodyReader<DocumentFile> {
 
-	private static final String PREFIX = "pfx";
+    private static final String PREFIX = "pfx";
 
-	private static final String SUFFIX = "sfx";
+    private static final String SUFFIX = "sfx";
 
-	private static final String PARAM_FILENAME = "filename";
-	private static final String PARAM_DOCUMENT_ID = "documentId";
+    private static final String PARAM_FILENAME = "filename";
+    private static final String PARAM_DOCUMENT_ID = "documentId";
 
-	private String downloadDirectory = null; // by default temp dir, consider allowing it to be defined at runtime
+    private final String downloadDirectory = null; // by default temp dir, consider allowing it to be defined at runtime
 
-	private final static Logger logger = Logger.getLogger(DocumentFileProvider.class);
+    private final static Logger logger = Logger.getLogger(DocumentFileProvider.class);
 
-	public boolean isReadable(Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType) {
-		return DocumentFile.class == type;
-	}
+    @Override
+    public boolean isReadable(final Class<?> type, final Type genericType,
+        final Annotation[] annotations, final MediaType mediaType) {
+        return DocumentFile.class == type;
+    }
 
-	public DocumentFile readFrom(Class<DocumentFile> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType,
-			MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-			throws IOException {
-		File downloadedFile = null;
-		String dispositionHeader = httpHeaders
-				.getFirst(FieldName.CONTENT_DISPOSITION);
-		ContentDisposition contentDisposition = null;
-		try {
-			contentDisposition = getContentDisposition(dispositionHeader);
-		} catch (ParseException pe) {
-			throw new IOException(
-					"Error occurred while parsing header. "
-							+ FieldName.CONTENT_DISPOSITION + " : "
-							+ dispositionHeader, pe);
-		}
-		DocumentFile documentFile = new DocumentFile();
-		String prefix = null;
-		String suffix = null;
-		if (contentDisposition != null) {
-			setDocumentAttributes(contentDisposition, documentFile);
-			suffix = getFileSuffix(contentDisposition, mediaType);
-			prefix = getFilePrefix(contentDisposition);
-		} else {
-			logger.warn("Content Disposition header not found in response. All the attributes DocumentFile instance won't be populated.");
-			suffix = getFileSuffix(mediaType);
-		}
-		if (StringUtils.isBlank(prefix)) {
-			prefix = PREFIX;
-		}
-		if (StringUtils.isBlank(suffix)) {
-			suffix = SUFFIX;
-		}
-		if (downloadDirectory != null) {
-			try {
-				downloadedFile = File.createTempFile(prefix, suffix, new File(
-						downloadDirectory));
-			} catch (final IOException ex) {
-				// could make this configurable, so we fail on fault rather than
-				// default.
-				logger.error("Could not bind to specified download directory "
-						+ downloadDirectory + " so will use temp dir.");
-			}
-		}
+    @Override
+    public DocumentFile readFrom(final Class<DocumentFile> type, final Type genericType,
+        final Annotation[] annotations, final MediaType mediaType,
+        final MultivaluedMap<String, String> httpHeaders, final InputStream entityStream)
+            throws IOException {
+        File downloadedFile = null;
+        final String dispositionHeader = httpHeaders
+            .getFirst(FieldName.CONTENT_DISPOSITION);
+        ContentDisposition contentDisposition = null;
+        try {
+            contentDisposition = getContentDisposition(dispositionHeader);
+        } catch (final ParseException pe) {
+            throw new IOException(
+                "Error occurred while parsing header. "
+                    + FieldName.CONTENT_DISPOSITION + " : "
+                    + dispositionHeader, pe);
+        }
+        final DocumentFile documentFile = new DocumentFile();
+        String prefix = null;
+        String suffix = null;
+        if (contentDisposition != null) {
+            setDocumentAttributes(contentDisposition, documentFile);
+            suffix = getFileSuffix(contentDisposition, mediaType);
+            prefix = getFilePrefix(contentDisposition);
+        } else {
+            logger.warn("Content Disposition header not found in response. All the attributes DocumentFile instance won't be populated.");
+            suffix = getFileSuffix(mediaType);
+        }
+        if (StringUtils.isBlank(prefix)) {
+            prefix = PREFIX;
+        }
+        if (StringUtils.isBlank(suffix)) {
+            suffix = SUFFIX;
+        }
+        if (downloadDirectory != null) {
+            try {
+                downloadedFile = File.createTempFile(prefix, suffix, new File(
+                    downloadDirectory));
+            } catch (final IOException ex) {
+                // could make this configurable, so we fail on fault rather than
+                // default.
+                logger.error("Could not bind to specified download directory "
+                    + downloadDirectory + " so will use temp dir.");
+            }
+        }
 
-		if (downloadedFile == null)
-			downloadedFile = File.createTempFile(prefix, suffix);
+        if (downloadedFile == null) {
+            downloadedFile = File.createTempFile(prefix, suffix);
+        }
 
-		OutputStream output = new BufferedOutputStream(new FileOutputStream(
-				downloadedFile));
+        final OutputStream output = new BufferedOutputStream(new FileOutputStream(
+            downloadedFile));
 
-		try {
-			ProviderHelper.writeTo(entityStream, output);
-		} finally {
-			output.close();
-		}
-		documentFile.setDocFile(downloadedFile);
+        try {
+            ProviderHelper.writeTo(entityStream, output);
+        } finally {
+            output.close();
+        }
+        documentFile.setDocFile(downloadedFile);
 
-		return documentFile;
-	}
+        return documentFile;
+    }
 
-	private String getFilePrefix(ContentDisposition contentDisposition) {
-		String fileName = contentDisposition.getParameter(PARAM_FILENAME);
-		return StringUtils.substringBeforeLast(fileName, ".");
-	}
+    private String getFilePrefix(final ContentDisposition contentDisposition) {
+        final String fileName = contentDisposition.getParameter(PARAM_FILENAME);
+        return StringUtils.substringBeforeLast(fileName, ".");
+    }
 
-	private void setDocumentAttributes(ContentDisposition contentDisposition,
-			DocumentFile documentFile) {
-		documentFile.setDocumentId(contentDisposition
-				.getParameter(PARAM_DOCUMENT_ID));
-		documentFile.setName(contentDisposition.getParameter(PARAM_FILENAME));
-	}
+    private void setDocumentAttributes(final ContentDisposition contentDisposition,
+        final DocumentFile documentFile) {
+        documentFile.setDocumentId(contentDisposition
+            .getParameter(PARAM_DOCUMENT_ID));
+        documentFile.setName(contentDisposition.getParameter(PARAM_FILENAME));
+    }
 
-	private String getFileSuffix(ContentDisposition contentDisposition,
-			MediaType mediaType) {
-		String fileName = contentDisposition.getParameter(PARAM_FILENAME);
-		return getFileSuffix(mediaType, fileName);
-	}
-	
-	private String getFileSuffix(MediaType mediaType) {
-		return getFileSuffix(mediaType, null);
-	}
+    private String getFileSuffix(final ContentDisposition contentDisposition,
+        final MediaType mediaType) {
+        final String fileName = contentDisposition.getParameter(PARAM_FILENAME);
+        return getFileSuffix(mediaType, fileName);
+    }
 
-	private String getFileSuffix(MediaType mediaType, String fileName) {
-		String suffix = StringUtils.substringAfterLast(fileName, ".");
-		String mediaSubtype = StringUtils.defaultString(mediaType.getSubtype());
-		boolean suffixBlank = StringUtils.isBlank(suffix);
-		boolean mediaSubtypeBlank = StringUtils.isBlank(mediaSubtype);
-		if (!suffixBlank && mediaSubtype.equalsIgnoreCase(suffix)) {
-			suffix = "." + suffix;
-		} else if (!suffixBlank && mediaSubtypeBlank) {
-			suffix = "." + suffix;
-		} else if (suffixBlank && !mediaSubtypeBlank) {
-			suffix = "." + mediaSubtype;
-		} else if (!suffixBlank && !mediaSubtypeBlank) {
-			suffix = "." + suffix + "." + mediaSubtype;
-		} else {
-			suffix = ".pdf";
-		}
-		return suffix;
-	}
+    private String getFileSuffix(final MediaType mediaType) {
+        return getFileSuffix(mediaType, null);
+    }
 
-	private ContentDisposition getContentDisposition(String dispositionHeader)
-			throws ParseException {
-		if (StringUtils.isBlank(dispositionHeader)) {
-			return null;
-		}
-		return new ContentDisposition(dispositionHeader);
-	}
+    private String getFileSuffix(final MediaType mediaType, final String fileName) {
+        String suffix = StringUtils.substringAfterLast(fileName, ".");
+        final String mediaSubtype = StringUtils.defaultString(mediaType.getSubtype());
+        final boolean suffixBlank = StringUtils.isBlank(suffix);
+        final boolean mediaSubtypeBlank = StringUtils.isBlank(mediaSubtype);
+        if (!suffixBlank && mediaSubtype.equalsIgnoreCase(suffix)) {
+            suffix = "." + suffix;
+        } else if (!suffixBlank && mediaSubtypeBlank) {
+            suffix = "." + suffix;
+        } else if (suffixBlank && !mediaSubtypeBlank) {
+            suffix = "." + mediaSubtype;
+        } else if (!suffixBlank && !mediaSubtypeBlank) {
+            suffix = "." + suffix + "." + mediaSubtype;
+        } else {
+            suffix = ".pdf";
+        }
+        return suffix;
+    }
 
-	public boolean isWriteable(Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType) {
-		return File.class.isAssignableFrom(type); // catch subtypes
-	}
+    private ContentDisposition getContentDisposition(final String dispositionHeader)
+        throws ParseException {
+        if (StringUtils.isBlank(dispositionHeader)) {
+            return null;
+        }
+        return new ContentDisposition(dispositionHeader);
+    }
 
-	public long getSize(File o, Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType) {
-		return o.length();
-	}
+    public boolean isWriteable(final Class<?> type, final Type genericType,
+        final Annotation[] annotations, final MediaType mediaType) {
+        return File.class.isAssignableFrom(type); // catch subtypes
+    }
 
-	public void writeTo(File uploadFile, Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType,
-			MultivaluedMap<String, Object> httpHeaders,
-			OutputStream entityStream) throws IOException {
-		InputStream inputStream = new BufferedInputStream(new FileInputStream(
-				uploadFile));
+    public long getSize(final File o, final Class<?> type, final Type genericType,
+        final Annotation[] annotations, final MediaType mediaType) {
+        return o.length();
+    }
 
-		try {
-			ProviderHelper.writeTo(inputStream, entityStream);
-		} finally {
-			inputStream.close();
-		}
-	}
+    public void writeTo(final File uploadFile, final Class<?> type, final Type genericType,
+        final Annotation[] annotations, final MediaType mediaType,
+        final MultivaluedMap<String, Object> httpHeaders,
+        final OutputStream entityStream) throws IOException {
+        final InputStream inputStream = new BufferedInputStream(new FileInputStream(
+            uploadFile));
+
+        try {
+            ProviderHelper.writeTo(inputStream, entityStream);
+        } finally {
+            inputStream.close();
+        }
+    }
 
 }

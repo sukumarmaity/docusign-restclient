@@ -15,12 +15,18 @@
  ******************************************************************************/
 package uk.co.techblue.docusign.client.credential;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
 
 import uk.co.techblue.docusign.client.dto.BaseDto;
 import uk.co.techblue.docusign.client.utils.DocuSignConstants;
+
 
 /**
  * The Class BasicDocusignCredential.
@@ -105,7 +111,7 @@ public class BasicDocusignCredential extends BaseDto implements DocuSignCredenti
         buffer.append(String.valueOf(credentials.getIntegratorKey()));
         buffer.append(wrapInAngularBrackets(TAG_INTEGRATOR_KEY, true));
 
-        if(!StringUtils.isBlank(credentials.getSendOnBehalfOf())) {
+        if (!StringUtils.isBlank(credentials.getSendOnBehalfOf())) {
             buffer.append(wrapInAngularBrackets(SEND_ON_BEHALF_OF, false));
             buffer.append(String.valueOf(credentials.getSendOnBehalfOf()));
             buffer.append(wrapInAngularBrackets(SEND_ON_BEHALF_OF, true));
@@ -221,26 +227,34 @@ public class BasicDocusignCredential extends BaseDto implements DocuSignCredenti
      */
     @Override
     public void setHeader(final ClientInvocation request) {
-        ClientRequestHeaders headers = new ClientRequestHeaders(request.getClientConfiguration());
+        final ClientRequestHeaders headers = new ClientRequestHeaders(request.getClientConfiguration());
         headers.header(DocuSignConstants.HEADER_PARAM_AUTHENTICATION, this);
         request.setHeaders(headers);
     }
 
     @Override
-    public boolean equals(Object obj) {
-    	if (!(obj instanceof BasicDocusignCredential)) {
-    		return false;
-    	}
-    	BasicDocusignCredential that = (BasicDocusignCredential) obj;
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof BasicDocusignCredential)) {
+            return false;
+        }
+        final BasicDocusignCredential that = (BasicDocusignCredential) obj;
 
-    	/* username, password and integratorKey must be not null */
-    	return this.username.equals(that.username) 
-    			&& this.password.equals(that.password) 
-    			&& this.integratorKey.equals(that.integratorKey);
+        /* username, password and integratorKey must be not null */
+        return this.username.equals(that.username)
+            && this.password.equals(that.password)
+            && this.integratorKey.equals(that.integratorKey);
     }
-    
+
     @Override
     public int hashCode() {
-    	return (username + password + integratorKey).hashCode();
+        return (username + password + integratorKey).hashCode();
+    }
+
+    @Override
+    public List<Header> getHeader() {
+        final Header header = new BasicHeader(DocuSignConstants.HEADER_PARAM_AUTHENTICATION, valueOf(this));
+        final List<Header> headers = new ArrayList<>();
+        headers.add(header);
+        return headers;
     }
 }

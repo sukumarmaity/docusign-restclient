@@ -18,22 +18,21 @@ package uk.co.techblue.docusign.client;
 import java.io.IOException;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
@@ -42,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.techblue.docusign.client.credential.DocuSignCredentials;
 import uk.co.techblue.docusign.client.utils.DocuSignUtils;
 import uk.co.techblue.docusign.resteasy.providers.DocumentFileProvider;
+import uk.co.techblue.docusign.route.DynamicProxyRoutePlanner;
 
 /**
  * The HTTP client can be configured adding in the classpath the following properties file:
@@ -68,57 +68,44 @@ public class DocuSignClient {
 
     private static void initializeProviderFactory() {
         try {
-            final ResteasyProviderFactory providerFactory = ResteasyProviderFactory
-                .getInstance();
-            registerResteasyProvider(providerFactory,
-                DocumentFileProvider.class);
+            final ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
+            registerResteasyProvider(providerFactory, DocumentFileProvider.class);
             RegisterBuiltin.register(providerFactory);
-        } catch (Exception e) {
-            logger.error(
-                "Error occurred while registering custom resteasy providers",
-                e);
+        } catch (final Exception e) {
+            logger.error("Error occurred while registering custom resteasy providers", e);
         }
     }
 
-    private static void registerResteasyProvider(
-        final ResteasyProviderFactory providerFactory,
-        Class<?> providerClass) {
-        boolean registered = false; // EXARI: providerFactory.getClasses().getInstance(providerClass) != null;
+    private static void registerResteasyProvider(final ResteasyProviderFactory providerFactory, final Class<?> providerClass) {
+        final boolean registered = false; // EXARI: providerFactory.getClasses().getInstance(providerClass) != null;
         if (!registered) {
             providerFactory.registerProvider(providerClass);
-            logger.info("Registered custom Provider with Resteasy:"
-                + providerClass.getName());
+            logger.info("Registered custom Provider with Resteasy:" + providerClass.getName());
         } else {
-            logger.info("Provider is already registered with Resteasy. Ignoring registration request:"
-                + providerClass.getName());
+            logger.info("Provider is already registered with Resteasy. Ignoring registration request:" + providerClass.getName());
         }
     }
 
     @SuppressWarnings("unused")
     private static void initializeAutoScanProviderFactory() {
         try {
-            final ResteasyProviderFactory providerFactory = ResteasyProviderFactory
-                .getInstance();
-            final Iterable<Class<?>> providerClasses = DocuSignUtils
-                .getClasses("uk.co.techblue.docusign.resteasy.providers");
+            final ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
+            final Iterable<Class<?>> providerClasses = DocuSignUtils.getClasses("uk.co.techblue.docusign.resteasy.providers");
             for (final Class<?> provider : providerClasses) {
                 if (provider.isAnnotationPresent(Provider.class)) {
                     providerFactory.registerProvider(provider);
                 }
             }
             RegisterBuiltin.register(providerFactory);
-        } catch (ClassNotFoundException cnfe) {
+        } catch (final ClassNotFoundException cnfe) {
             logger.error(
-                "Error occurred while registering custom resteasy providers",
-                cnfe);
-        } catch (IOException ioe) {
+                "Error occurred while registering custom resteasy providers", cnfe);
+        } catch (final IOException ioe) {
             logger.error(
-                "Error occurred while registering custom resteasy providers",
-                ioe);
-        } catch (Exception e) {
+                "Error occurred while registering custom resteasy providers", ioe);
+        } catch (final Exception e) {
             logger.error(
-                "Error occurred while registering custom resteasy providers",
-                e);
+                "Error occurred while registering custom resteasy providers", e);
         }
     }
 
@@ -128,34 +115,34 @@ public class DocuSignClient {
         private HttpClientConfiguration() {
             try {
                 docusignClientBundle = ResourceBundle.getBundle(DocuSignClient.class.getCanonicalName());
-            } catch (MissingResourceException mre) {
+            } catch (final MissingResourceException mre) {
                 /* Ignore */
             }
         }
 
-        private String getString(String key, String defaultValue) {
+        private String getString(final String key, final String defaultValue) {
             String value = defaultValue;
             try {
                 if (docusignClientBundle != null) {
                     value = docusignClientBundle.getString(key);
                 }
-            } catch (MissingResourceException mre) {
+            } catch (final MissingResourceException mre) {
                 /* Ignore */
             }
 
             return value;
         }
 
-        private int getInteger(String key, int defaultValue) {
+        private int getInteger(final String key, final int defaultValue) {
             int value = defaultValue;
             try {
                 if (docusignClientBundle != null) {
-                    String valueString = docusignClientBundle.getString(key);
+                    final String valueString = docusignClientBundle.getString(key);
                     value = Integer.parseInt(valueString);
                 }
-            } catch (MissingResourceException mre) {
+            } catch (final MissingResourceException mre) {
                 /* Ignore */
-            } catch (NumberFormatException nfe) {
+            } catch (final NumberFormatException nfe) {
                 /* Ignore */
                 if (nfe.getMessage() != null) {
                     logger.debug(nfe.getMessage());
@@ -190,24 +177,24 @@ public class DocuSignClient {
         if (client == null) {
             synchronized (DocuSignClient.class) {
                 if (client == null) {
-                    PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+                    final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
 
-                    int maxPerRoute = httpClientConfiguration.getDefaultMaxPerRoute();
+                    final int maxPerRoute = httpClientConfiguration.getDefaultMaxPerRoute();
                     cm.setDefaultMaxPerRoute(maxPerRoute);
                     cm.setMaxTotal(maxPerRoute);
 
-                    int timeout = httpClientConfiguration.getTimeout();
-                    String proxyHost = httpClientConfiguration.getProxyHost();
+                    final int timeout = httpClientConfiguration.getTimeout();
+                    final String proxyHost = httpClientConfiguration.getProxyHost();
 
-                    RequestConfig.Builder configBuilder = RequestConfig.custom().setConnectTimeout(timeout).setSocketTimeout(timeout);
+                    final RequestConfig.Builder configBuilder = RequestConfig.custom().setConnectTimeout(timeout).setSocketTimeout(timeout);
                     // Configure proxy info if necessary and defined
-                    if (proxyHost != null && !proxyHost.equals("")) {
+                    if (StringUtils.isNotBlank(proxyHost)) {
                         // Configure the host and port
-                        int port = httpClientConfiguration.getProxyPort();
-                        HttpHost proxy = new HttpHost(proxyHost, port);
+                        final int port = httpClientConfiguration.getProxyPort();
+                        final HttpHost proxy = new HttpHost(proxyHost, port);
                         configBuilder.setProxy(proxy);
                     }
-                    RequestConfig config = configBuilder.build();
+                    final RequestConfig config = configBuilder.build();
                     client = HttpClientBuilder.create().setConnectionManager(cm).setDefaultRequestConfig(config).build();
                 }
             }
@@ -224,43 +211,26 @@ public class DocuSignClient {
      * @param serverUri the server uri
      * @return the client service
      */
-    public static <T> T getClientService(final Class<T> clazz,
-        final String serverUri, final DocuSignCredentials credentials) {
-
+    public static <T> T getClientService(final Class<T> clazz, final String serverUri, final DocuSignCredentials credentials) {
         logger.info("Generating REST resource proxy for: " + clazz.getName());
-
-        HttpClient httpClient = getHttpClient();
-
-        ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient) {
-            @Override
-            public ClientResponse invoke(ClientInvocation request) {
-                credentials.setHeader(request);
-                return super.invoke(request);
-            }
-        };
-
-        String connectionPortRedirect = httpClientConfiguration.getConnectionPortRedirect();
-        String reqServerUri = serverUri;
-        if (connectionPortRedirect != null && "true".equals(connectionPortRedirect)) {
-            Matcher m = Pattern.compile("(.*)://([^/]*)(/.*)+").matcher(serverUri);
-            if (m.matches()) {
-                String protocol = m.group(1);
-                String host = m.group(2);
-                String path = m.group(3);
-                if (host.indexOf(":") > 0) {
-                    host = host.substring(0, host.indexOf(":"));
-                }
-                String key = CONNECTION_URL + "." + host;
-                String redirectPort = httpClientConfiguration.getString(key, null);
-                if (redirectPort != null) {
-                    reqServerUri = protocol + "://" + host + ":" + redirectPort + path;
-                }
-            }
+        final String proxyHost = System.getProperty("proxy.host");
+        final int proxyPort = NumberUtils.toInt(System.getProperty("proxy.port"));
+        DynamicProxyRoutePlanner routePlanner = null;
+        if (StringUtils.isNotBlank(proxyHost)) {
+            final HttpHost httpProxy = new HttpHost(proxyHost, proxyPort);
+            routePlanner = new DynamicProxyRoutePlanner(httpProxy);
         }
+
+        final HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+        httpClientBuilder.setRoutePlanner(routePlanner);
+
+        final HttpClient httpclient =
+            HttpClients.custom().setRoutePlanner(routePlanner).setDefaultHeaders(credentials.getHeader()).build();
+
+        final ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpclient);
         final ResteasyClientBuilder resteasyClientBuilder = new ResteasyClientBuilder().connectionPoolSize(20);
         final ResteasyClient client = resteasyClientBuilder.httpEngine(engine).build();
-        final ResteasyWebTarget target = client.target(reqServerUri);
-
+        final ResteasyWebTarget target = client.target(serverUri);
         return target.proxy(clazz);
     }
 }

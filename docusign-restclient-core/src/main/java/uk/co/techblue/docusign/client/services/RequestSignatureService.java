@@ -15,7 +15,8 @@
  ******************************************************************************/
 package uk.co.techblue.docusign.client.services;
 
-import org.jboss.resteasy.client.ClientResponse;
+import javax.ws.rs.core.Response;
+
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 
 import uk.co.techblue.docusign.client.BaseService;
@@ -44,7 +45,7 @@ public class RequestSignatureService extends BaseService<RequestSignatureResourc
      * @throws ServiceInitException
      *             the service init exception
      */
-    public RequestSignatureService(String serverUri, DocuSignCredentials credentials)
+    public RequestSignatureService(final String serverUri, final DocuSignCredentials credentials)
             throws ServiceInitException {
         super(serverUri, credentials);
     }
@@ -61,8 +62,8 @@ public class RequestSignatureService extends BaseService<RequestSignatureResourc
      * @throws ServiceInitException
      *             the service init exception
      */
-    public RequestSignatureService(String serverUri, DocuSignCredentials credentials,
-            LoginAccount loginAccount) throws ServiceInitException {
+    public RequestSignatureService(final String serverUri, final DocuSignCredentials credentials,
+            final LoginAccount loginAccount) throws ServiceInitException {
         super(loginAccount, credentials);
     }
 
@@ -75,10 +76,9 @@ public class RequestSignatureService extends BaseService<RequestSignatureResourc
      * @throws SignatureRequestException
      *             the signature request exception
      */
-    public SignatureResponse sendFromTemplate(TemplateSignatureRequest signatureRequest)
-            throws SignatureRequestException {
-        ClientResponse<SignatureResponse> clientResponse = resourceProxy.sendFromTemplate(signatureRequest);
-        return parseEntityFromResponse(clientResponse, SignatureRequestException.class);
+    public SignatureResponse sendFromTemplate(final TemplateSignatureRequest signatureRequest) throws SignatureRequestException {
+        final Response clientResponse = resourceProxy.sendFromTemplate(signatureRequest);
+        return parseEntityFromResponse(clientResponse, SignatureResponse.class, SignatureRequestException.class);
     }
 
     /**
@@ -90,11 +90,10 @@ public class RequestSignatureService extends BaseService<RequestSignatureResourc
      * @throws SignatureRequestException
      *             the signature request exception
      */
-    public SignatureResponse sendDocument(DocumentSignatureRequest signatureRequest)
-            throws SignatureRequestException {
-        MultipartFormDataOutput dataOut = DocuSignUtils.generateMultipartFormDataOutput(signatureRequest);
-        ClientResponse<SignatureResponse> clientResponse = resourceProxy.sendDocument(dataOut);
-        return parseEntityFromResponse(clientResponse, SignatureRequestException.class);
+    public SignatureResponse sendDocument(final DocumentSignatureRequest signatureRequest) throws SignatureRequestException {
+        final MultipartFormDataOutput dataOut = DocuSignUtils.generateMultipartFormDataOutput(signatureRequest);
+        final Response clientResponse = resourceProxy.sendDocument(dataOut);
+        return parseEntityFromResponse(clientResponse, SignatureResponse.class, SignatureRequestException.class);
     }
 
     /*

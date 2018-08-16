@@ -21,12 +21,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import org.jboss.resteasy.client.ClientResponse;
+import javax.ws.rs.core.Response;
 
 import uk.co.techblue.docusign.client.Resource;
 import uk.co.techblue.docusign.client.dto.account.BrandDeleteRequest;
-import uk.co.techblue.docusign.client.dto.account.BrandProfilesResponse;
 import uk.co.techblue.docusign.client.utils.DocuSignConstants;
 
 /**
@@ -45,7 +43,7 @@ public interface AccountResource extends Resource {
     @GET
     @Path("brands")
     @Produces(MediaType.APPLICATION_JSON)
-    public ClientResponse<BrandProfilesResponse> getBrandProfiles();
+    public Response getBrandProfiles();
 
     /**
      * Delete branding profiles.
@@ -57,5 +55,5 @@ public interface AccountResource extends Resource {
     @Path("brands")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ClientResponse<String> deleteBrandingProfiles(final BrandDeleteRequest brandDeleteRequest);
+    public Response deleteBrandingProfiles(final BrandDeleteRequest brandDeleteRequest);
 }

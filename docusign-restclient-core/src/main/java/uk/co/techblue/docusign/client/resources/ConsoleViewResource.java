@@ -22,46 +22,68 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import org.jboss.resteasy.client.ClientResponse;
+import javax.ws.rs.core.Response;
 
 import uk.co.techblue.docusign.client.Resource;
 import uk.co.techblue.docusign.client.dto.CorrectionViewRequest;
 import uk.co.techblue.docusign.client.dto.EnvelopeSenderViewRequest;
-import uk.co.techblue.docusign.client.dto.UrlResponse;
 import uk.co.techblue.docusign.client.dto.recipients.RecipientViewRequest;
 import uk.co.techblue.docusign.client.utils.DocuSignConstants;
 
+/**
+ * The Interface ConsoleViewResource.
+ *
+ */
 @Path(DocuSignConstants.RESOURCE_CONTEXT_PATH)
 public interface ConsoleViewResource extends Resource {
 
+    /**
+     * Gets the envelope sender view.
+     *
+     * @param envelopeId the envelope id
+     * @param envelopeSenderViewRequest the envelope sender view request
+     * @return the envelope sender view
+     */
     @POST
     @Path("envelopes/{envelopeId}/views/sender")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ClientResponse<UrlResponse> getEnvelopeSenderView(
-        @PathParam("envelopeId") String envelopeId,
-        EnvelopeSenderViewRequest envelopeSenderViewRequest);
+    public Response getEnvelopeSenderView(@PathParam("envelopeId") String envelopeId, EnvelopeSenderViewRequest envelopeSenderViewRequest);
 
+    /**
+     * Gets the envelope recipient view.
+     *
+     * @param envelopeId the envelope id
+     * @param recipientViewRequest the recipient view request
+     * @return the envelope recipient view
+     */
     @POST
     @Path("envelopes/{envelopeId}/views/recipient")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ClientResponse<UrlResponse> getEnvelopeRecipientView(
-        @PathParam("envelopeId") String envelopeId,
-        RecipientViewRequest recipientViewRequest);
+    public Response getEnvelopeRecipientView(@PathParam("envelopeId") String envelopeId, RecipientViewRequest recipientViewRequest);
 
+    /**
+     * Gets the envelope correction view.
+     *
+     * @param envelopeId the envelope id
+     * @param correctionViewRequest the correction view request
+     * @return the envelope correction view
+     */
     @POST
     @Path("envelopes/{envelopeId}/views/correct")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ClientResponse<UrlResponse> getEnvelopeCorrectionView(
-        @PathParam("envelopeId") String envelopeId,
-        CorrectionViewRequest correctionViewRequest);
+    public Response getEnvelopeCorrectionView(@PathParam("envelopeId") String envelopeId, CorrectionViewRequest correctionViewRequest);
 
+    /**
+     * Gets the authentication view.
+     *
+     * @return the authentication view
+     */
     @GET
     @Path("views/authentication")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes()
-    public ClientResponse<UrlResponse> getAuthenticationView();
+    public Response getAuthenticationView();
 }

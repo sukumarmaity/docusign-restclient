@@ -50,6 +50,10 @@ public abstract class SignatureRequest extends BaseDto {
     @JsonProperty
     private Boolean enforceSignerVisibility;
 
+    /** The enable wet sign. */
+    @JsonProperty
+    private Boolean enableWetSign;
+
     /**
      * Gets the email blurb.
      * 
@@ -121,6 +125,14 @@ public abstract class SignatureRequest extends BaseDto {
      */
     public void setEnforceSignerVisibility(final Boolean enforceSignerVisibility) {
         this.enforceSignerVisibility = enforceSignerVisibility;
+    }
+
+    public Boolean getEnableWetSign() {
+        return enableWetSign;
+    }
+
+    public void setEnableWetSign(Boolean enableWetSign) {
+        this.enableWetSign = enableWetSign;
     }
 
 }

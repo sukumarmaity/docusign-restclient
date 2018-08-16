@@ -15,6 +15,9 @@
  ******************************************************************************/
 package uk.co.techblue.docusign.client.credential;
 
+import java.util.List;
+
+import org.apache.http.Header;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 
 /**
@@ -37,4 +40,11 @@ public interface DocuSignCredentials {
      * @return the username
      */
     public String getUsername();
+
+    /**
+     * Gets the header.
+     * 
+     * @param request the new header
+     */
+    public List<Header> getHeader();
 }

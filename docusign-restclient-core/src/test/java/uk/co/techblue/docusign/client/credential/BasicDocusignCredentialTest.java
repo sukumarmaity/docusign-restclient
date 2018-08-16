@@ -1,6 +1,9 @@
+/*******************************************************************************
+ * Copyright 2018, Techblue Software Pvt Ltd. All Rights Reserved.
+ * No part of this content may be used without Techblue's express consent.
+ ******************************************************************************/
 package uk.co.techblue.docusign.client.credential;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.client.ClientRequest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,20 +19,20 @@ public class BasicDocusignCredentialTest {
 
     @Test
     public void testSendOnBehalfOf() {
-        BasicDocusignCredential credential = new BasicDocusignCredential(USERNAME, PASSWORD, INTERGRATION_KEY, SEND_ON_BEHALF_OF);
+        final BasicDocusignCredential credential = new BasicDocusignCredential(USERNAME, PASSWORD, INTERGRATION_KEY, SEND_ON_BEHALF_OF);
         Assert.assertEquals(getCredentialString(true), BasicDocusignCredential.valueOf(credential));
     }
 
     @Test
     public void testValueOf() {
-        BasicDocusignCredential credential = new BasicDocusignCredential(USERNAME, PASSWORD, INTERGRATION_KEY);
+        final BasicDocusignCredential credential = new BasicDocusignCredential(USERNAME, PASSWORD, INTERGRATION_KEY);
         Assert.assertEquals(getCredentialString(), BasicDocusignCredential.valueOf(credential));
     }
 
     @Test
     public void testSetHeader() {
-        BasicDocusignCredential credential = new BasicDocusignCredential(USERNAME, PASSWORD, INTERGRATION_KEY);
-        ClientRequest request = new ClientRequest("uriTemplate");
+        new BasicDocusignCredential(USERNAME, PASSWORD, INTERGRATION_KEY);
+        final ClientRequest request = new ClientRequest("uriTemplate");
         // make sure auth header is not set
         Assert.assertNull(request.getHeaders().getFirst(DocuSignConstants.HEADER_PARAM_AUTHENTICATION));
 //        credential.setHeader(request);
@@ -41,7 +44,7 @@ public class BasicDocusignCredentialTest {
         return getCredentialString(false);
     }
 
-    private String getCredentialString(boolean includeSendOnBehalfOf) {
+    private String getCredentialString(final boolean includeSendOnBehalfOf) {
         String expected = "<DocuSignCredentials>"
                         + "<Username>" + USERNAME + "</Username>"
                         + "<Password>" + PASSWORD + "</Password>"

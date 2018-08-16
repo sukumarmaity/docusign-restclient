@@ -16,6 +16,9 @@
 package uk.co.techblue.docusign.client.credential;
 
 
+import java.util.List;
+
+import org.apache.http.Header;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
 
@@ -78,27 +81,35 @@ public class TokenDocuSignCredential extends BaseDto implements DocuSignCredenti
      */
     @Override
     public void setHeader(final ClientInvocation request) {
-        ClientRequestHeaders headers = new ClientRequestHeaders(request.getClientConfiguration());
+        final ClientRequestHeaders headers = new ClientRequestHeaders(request.getClientConfiguration());
         headers.header(DocuSignConstants.HEADER_PARAM_AUTHORIZATION, "bearer " + token);
         if (xDocuSignActAsUser != null && !xDocuSignActAsUser.equals("")) {
             headers.header(DocuSignConstants.HEADER_PARAM_ACT_AS_USER, xDocuSignActAsUser);
         }
         request.setHeaders(headers);
     }
-    
+
+    @Override
     public int hashCode() {
-    	return (token + username + (xDocuSignActAsUser != null? xDocuSignActAsUser: "")).hashCode();
+        return (token + username + (xDocuSignActAsUser != null? xDocuSignActAsUser: "")).hashCode();
     }
-    
-    public boolean equals (Object obj) {
-    	if (!(obj instanceof TokenDocuSignCredential)) {
-    		return false;
-    	}
-    	TokenDocuSignCredential that = (TokenDocuSignCredential)obj;
-    	
-    	return token.equals(that.token) 
-    			&& username.equals(that.username)
-    			&& ((xDocuSignActAsUser == null && that.xDocuSignActAsUser == null)
-    					|| (xDocuSignActAsUser != null && xDocuSignActAsUser.equals(that.xDocuSignActAsUser)));
+
+    @Override
+    public boolean equals (final Object obj) {
+        if (!(obj instanceof TokenDocuSignCredential)) {
+            return false;
+        }
+        final TokenDocuSignCredential that = (TokenDocuSignCredential)obj;
+
+        return token.equals(that.token) 
+            && username.equals(that.username)
+            && ((xDocuSignActAsUser == null && that.xDocuSignActAsUser == null)
+                || (xDocuSignActAsUser != null && xDocuSignActAsUser.equals(that.xDocuSignActAsUser)));
+    }
+
+    @Override
+    public List<Header> getHeader() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

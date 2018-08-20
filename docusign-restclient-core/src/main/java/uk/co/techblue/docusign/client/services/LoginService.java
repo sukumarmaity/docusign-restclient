@@ -15,7 +15,8 @@
  ******************************************************************************/
 package uk.co.techblue.docusign.client.services;
 
-import org.jboss.resteasy.client.ClientResponse;
+
+import javax.ws.rs.core.Response;
 
 import uk.co.techblue.docusign.client.Service;
 import uk.co.techblue.docusign.client.credential.DocuSignCredentials;
@@ -50,11 +51,9 @@ public class LoginService extends Service<LoginResource> {
      * @return the login information
      * @throws LoginException the login exception
      */
-    public ClientInfo getLoginInformation()
-        throws LoginException {
-        final ClientResponse<ClientInfo> clientResponse = resourceProxy
-            .getLoginInformation();
-        return parseEntityFromResponse(clientResponse, LoginException.class);
+    public ClientInfo getLoginInformation() throws LoginException {
+        final Response clientResponse = resourceProxy.getLoginInformation();
+        return parseEntityFromResponse(clientResponse, ClientInfo.class, LoginException.class);
     }
 
     /**
@@ -64,8 +63,8 @@ public class LoginService extends Service<LoginResource> {
      * @throws LoginException the login exception
      */
     public Oauth2TokenResponse getOAuth2Token(final Oauth2TokenRequest oauth2TokenRequest) throws LoginException {
-        final ClientResponse<Oauth2TokenResponse> clientResponse = resourceProxy.getOAuth2Token(oauth2TokenRequest);
-        return parseEntityFromResponse(clientResponse, LoginException.class);
+        final Response clientResponse = resourceProxy.getOAuth2Token(oauth2TokenRequest);
+        return parseEntityFromResponse(clientResponse, Oauth2TokenResponse.class, LoginException.class);
     }
 
     /**
@@ -77,7 +76,7 @@ public class LoginService extends Service<LoginResource> {
      */
     public void changePassword(final ChangePasswordRequest changePasswordRequest)
         throws UserAccountException {
-        final ClientResponse<?> clientResponse = resourceProxy.changePassword(changePasswordRequest);
+        final Response clientResponse = resourceProxy.changePassword(changePasswordRequest);
         validateResponseAndReleaseConnection(clientResponse, UserAccountException.class);
     }
 

@@ -15,14 +15,15 @@
  ******************************************************************************/
 package uk.co.techblue.docusign.client;
 
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ClientResponseFailure;
+import java.lang.reflect.InvocationTargetException;
+
+import javax.ws.rs.client.ResponseProcessingException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status.Family;
+
 import uk.co.techblue.docusign.client.credential.DocuSignCredentials;
 import uk.co.techblue.docusign.client.dto.ErrorResponse;
 import uk.co.techblue.docusign.client.exception.DocuSignException;
-
-import javax.ws.rs.core.Response.Status.Family;
-import java.lang.reflect.InvocationTargetException;
 
 public abstract class Service<RT extends Resource> {
     /** The rest base uri. */
@@ -59,17 +60,17 @@ public abstract class Service<RT extends Resource> {
      * @param <EX> the Exception type to throw if parsing fails
      * @param clientResponse the client response
      * @param exceptionClazz the exception class to throw if parsing fails
+     * @return
      * @return the entity
      * @throws EX a subclass of docusign exception
      */
-    protected <T, EX extends DocuSignException> T parseEntityFromResponse(final ClientResponse<T> clientResponse,
-        final Class<EX> exceptionClazz) throws EX {
+    protected <T, EX extends DocuSignException> T parseEntityFromResponse(final Response clientResponse, final Class<T> responsetype, final Class<EX> exceptionClazz) throws EX {
         T entity = null;
         try {
             validateResponseSuccess(clientResponse, exceptionClazz);
-            entity = clientResponse.getEntity();
+            entity = clientResponse.readEntity(responsetype);
         } finally {
-            clientResponse.releaseConnection();
+            clientResponse.close();
         }
         return entity;
     }
@@ -82,14 +83,14 @@ public abstract class Service<RT extends Resource> {
      * @param exceptionClazz the exception clazz
      * @throws EX the eX
      */
-    protected <EX extends DocuSignException> void validateResponseSuccess(final ClientResponse<?> clientResponse,
+    protected <EX extends DocuSignException> void validateResponseSuccess(final Response clientResponse,
         final Class<EX> exceptionClazz) throws EX {
-        if (clientResponse.getResponseStatus().getFamily() != Family.SUCCESSFUL) {
+        if (clientResponse.getStatusInfo().getFamily() != Family.SUCCESSFUL) {
             ErrorResponse errorResponse = null;
             Exception cause = null;
             try {
-                errorResponse = clientResponse.getEntity(ErrorResponse.class);
-            } catch (final ClientResponseFailure responseFailure) {
+                errorResponse = clientResponse.readEntity(ErrorResponse.class);
+            } catch (final ResponseProcessingException responseFailure) {
                 cause = responseFailure;
             }
             EX exception = null;
@@ -133,12 +134,11 @@ public abstract class Service<RT extends Resource> {
         return DocuSignClient.getClientService(clazz, serverUri, credentials);
     }
 
-    public <EX extends DocuSignException> void validateResponseAndReleaseConnection(ClientResponse<?> clientResponse,
-        final Class<EX>  exceptionClazz) throws EX {
+    public <EX extends DocuSignException> void validateResponseAndReleaseConnection(final Response clientResponse, final Class<EX> exceptionClazz) throws EX {
         try {
             validateResponseSuccess(clientResponse, exceptionClazz);
         } finally {
-            clientResponse.releaseConnection();
+            clientResponse.close();
         }
     }
 }

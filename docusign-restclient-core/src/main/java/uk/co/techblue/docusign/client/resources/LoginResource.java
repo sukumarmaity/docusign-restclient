@@ -22,16 +22,13 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.client.ClientResponse;
 
 import uk.co.techblue.docusign.client.Resource;
 import uk.co.techblue.docusign.client.dto.Oauth2TokenRequest;
-import uk.co.techblue.docusign.client.dto.Oauth2TokenResponse;
-import uk.co.techblue.docusign.client.dto.UrlResponse;
 import uk.co.techblue.docusign.client.dto.user.ChangePasswordRequest;
-import uk.co.techblue.docusign.client.dto.user.ClientInfo;
 import uk.co.techblue.docusign.client.utils.DocuSignConstants;
 
 /**
@@ -50,7 +47,7 @@ public interface LoginResource extends Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("login_information")
-    ClientResponse<ClientInfo> getLoginInformation();
+    Response getLoginInformation();
 
     /**
      * Gets the authentication view.
@@ -60,7 +57,7 @@ public interface LoginResource extends Resource {
     @GET
     @Path("views/authentication")
     @Produces(MediaType.APPLICATION_JSON)
-    public ClientResponse<UrlResponse> getAuthenticationView();
+    public Response getAuthenticationView();
 
     /**
      * Gets the o auth2 token.
@@ -70,7 +67,7 @@ public interface LoginResource extends Resource {
     @POST
     @Path("oauth2/token")
     @Produces(MediaType.APPLICATION_JSON)
-    public ClientResponse<Oauth2TokenResponse> getOAuth2Token(@Form final Oauth2TokenRequest oauth2TokenRequest);
+    public Response getOAuth2Token(@Form final Oauth2TokenRequest oauth2TokenRequest);
 
     /**
      * Change password.
@@ -81,7 +78,6 @@ public interface LoginResource extends Resource {
     @PUT
     @Path("login_information/password")
     @Consumes(MediaType.APPLICATION_JSON)
-    public ClientResponse<Object> changePassword(
-        ChangePasswordRequest changePasswordRequest);
+    public Response changePassword(ChangePasswordRequest changePasswordRequest);
 
 }

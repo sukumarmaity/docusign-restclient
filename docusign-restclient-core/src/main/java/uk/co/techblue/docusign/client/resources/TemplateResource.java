@@ -20,25 +20,37 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import org.jboss.resteasy.client.ClientResponse;
+import javax.ws.rs.core.Response;
 
 import uk.co.techblue.docusign.client.Resource;
-import uk.co.techblue.docusign.client.dto.Template;
-import uk.co.techblue.docusign.client.dto.TemplateInfo;
 import uk.co.techblue.docusign.client.utils.DocuSignConstants;
 
+/**
+ * The Interface TemplateResource.
+ *
+ * @author <a href="mailto:amit.choudhary@techblue.co.uk">Amit Choudhary</a>
+ */
 @Path(DocuSignConstants.RESOURCE_CONTEXT_PATH)
 public interface TemplateResource extends Resource {
 
+    /**
+     * Response.
+     *
+     * @return the response
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("templates")
-    public ClientResponse<TemplateInfo> retrieveTemplates();
+    public Response retrieveTemplates();
 
+    /**
+     * Response.
+     *
+     * @param templateId the template id
+     * @return the response
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("templates/{templateId}")
-    public ClientResponse<Template> retrieveTemplate (
-    		@PathParam("templateId") String templateId);
+    public Response retrieveTemplate(@PathParam("templateId") String templateId);
 }

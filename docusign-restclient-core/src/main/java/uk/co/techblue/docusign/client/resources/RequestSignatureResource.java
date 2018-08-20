@@ -20,30 +20,42 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 
 import uk.co.techblue.docusign.client.Resource;
-import uk.co.techblue.docusign.client.dto.SignatureResponse;
 import uk.co.techblue.docusign.client.dto.TemplateSignatureRequest;
 import uk.co.techblue.docusign.client.utils.DocuSignConstants;
 
+/**
+ * The Interface RequestSignatureResource.
+ */
 @Path(DocuSignConstants.RESOURCE_CONTEXT_PATH)
 public interface RequestSignatureResource extends Resource {
 
+    /**
+     * Response.
+     *
+     * @param signatureRequest the signature request
+     * @return the response
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("envelopes")
     @Consumes(MediaType.APPLICATION_JSON)
-    ClientResponse<SignatureResponse> sendFromTemplate(
-            TemplateSignatureRequest signatureRequest);
+    Response sendFromTemplate(TemplateSignatureRequest signatureRequest);
 
+    /**
+     * Response.
+     *
+     * @param formDataOutput the form data output
+     * @return the response
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("envelopes")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    ClientResponse<SignatureResponse> sendDocument(
-            MultipartFormDataOutput formDataOutput);
+    Response sendDocument(MultipartFormDataOutput formDataOutput);
 
 }

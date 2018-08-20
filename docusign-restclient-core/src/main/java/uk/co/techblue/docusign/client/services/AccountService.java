@@ -15,7 +15,8 @@
  ******************************************************************************/
 package uk.co.techblue.docusign.client.services;
 
-import org.jboss.resteasy.client.ClientResponse;
+
+import javax.ws.rs.core.Response;
 
 import uk.co.techblue.docusign.client.BaseService;
 import uk.co.techblue.docusign.client.credential.DocuSignCredentials;
@@ -64,9 +65,8 @@ public class AccountService extends BaseService<AccountResource> {
      * @throws AccountException the account exception
      */
     public BrandProfilesResponse getBrandProfiles() throws AccountException {
-        final ClientResponse<BrandProfilesResponse> clientResponse = resourceProxy.getBrandProfiles();
-        return parseEntityFromResponse(clientResponse,
-            AccountException.class);
+        final Response clientResponse = resourceProxy.getBrandProfiles();
+        return parseEntityFromResponse(clientResponse, BrandProfilesResponse.class, AccountException.class);
     }
 
     /**
@@ -76,7 +76,7 @@ public class AccountService extends BaseService<AccountResource> {
      * @throws AccountException the account exception
      */
     public void deleteBrandProfiles(final BrandDeleteRequest brandDeleteRequest) throws AccountException {
-        final ClientResponse<String> clientResponse = resourceProxy.deleteBrandingProfiles(brandDeleteRequest);
+        final Response clientResponse = resourceProxy.deleteBrandingProfiles(brandDeleteRequest);
         validateResponseAndReleaseConnection(clientResponse, AccountException.class);
     }
 

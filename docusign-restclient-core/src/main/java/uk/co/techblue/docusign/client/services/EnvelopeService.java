@@ -17,19 +17,31 @@ package uk.co.techblue.docusign.client.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.activation.FileDataSource;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.james.mime4j.field.FieldName;
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.plugins.providers.multipart.OutputPart;
 
 import uk.co.techblue.docusign.client.BaseService;
 import uk.co.techblue.docusign.client.credential.DocuSignCredentials;
-import uk.co.techblue.docusign.client.dto.*;
+import uk.co.techblue.docusign.client.dto.AuditEventsResponse;
+import uk.co.techblue.docusign.client.dto.CustomFields;
+import uk.co.techblue.docusign.client.dto.Document;
+import uk.co.techblue.docusign.client.dto.DocumentFile;
+import uk.co.techblue.docusign.client.dto.DocumentInfo;
+import uk.co.techblue.docusign.client.dto.Envelope;
+import uk.co.techblue.docusign.client.dto.EnvelopeDetailInfo;
+import uk.co.techblue.docusign.client.dto.EnvelopeDocumentInfo;
+import uk.co.techblue.docusign.client.dto.EnvelopeInfo;
+import uk.co.techblue.docusign.client.dto.EnvelopeNotificationInfo;
+import uk.co.techblue.docusign.client.dto.EnvelopeStatusQueryForm;
+import uk.co.techblue.docusign.client.dto.EnvelopeStatusResponse;
+import uk.co.techblue.docusign.client.dto.StatusChangeRequest;
+import uk.co.techblue.docusign.client.dto.VoidEnvelopeRequest;
 import uk.co.techblue.docusign.client.dto.recipients.RecipientStatusCollection;
 import uk.co.techblue.docusign.client.dto.recipients.RecipientUpdateResults;
 import uk.co.techblue.docusign.client.dto.recipients.Signers;
@@ -84,7 +96,7 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
         final StatusChangeRequest statusChangeRequest = new StatusChangeRequest();
         statusChangeRequest.setStatus(Status.sent);
         statusChangeRequest.setStatusReason(statusChangeReason);
-        final ClientResponse<?> clientResponse = resourceProxy.changeStatus(envelopeId, statusChangeRequest);
+        final Response clientResponse = resourceProxy.changeStatus(envelopeId, statusChangeRequest);
         validateResponseAndReleaseConnection(clientResponse, EnvelopeException.class);
     }
 
@@ -98,7 +110,7 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      */
     public void changeStatus(final String envelopeId,
         final StatusChangeRequest statusChangeRequest) throws EnvelopeException {
-        final ClientResponse<?> clientResponse = resourceProxy.changeStatus(envelopeId, statusChangeRequest);
+        final Response clientResponse = resourceProxy.changeStatus(envelopeId, statusChangeRequest);
         validateResponseAndReleaseConnection(clientResponse, EnvelopeException.class);
     }
 
@@ -110,7 +122,7 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      */
     public void voidEnvelope(final String envelopeId,
         final VoidEnvelopeRequest voidEnvelopeRequest) throws EnvelopeException {
-        final ClientResponse<?> clientResponse = resourceProxy.voidEnvelope(envelopeId, voidEnvelopeRequest);
+        final Response clientResponse = resourceProxy.voidEnvelope(envelopeId, voidEnvelopeRequest);
         validateResponseAndReleaseConnection(clientResponse, EnvelopeException.class);
     }
 
@@ -122,9 +134,9 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      */
     public AuditEventsResponse getAuditEvents(final String envelopeId) throws EnvelopeException {
 
-        final ClientResponse<AuditEventsResponse> clientResponse = resourceProxy.getAuditEvents(envelopeId);
+        final Response clientResponse = resourceProxy.getAuditEvents(envelopeId);
 
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+        return parseEntityFromResponse(clientResponse, AuditEventsResponse.class, EnvelopeException.class);
     }
 
     /**
@@ -139,7 +151,7 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
         final FileDataSource fileDataSource = new FileDataSource(document.getPath());
         final String contentDisposition = DocuSignUtils
             .getContentDispositionHeader(document);
-        ClientResponse<String> clientResponse;
+        Response clientResponse;
         clientResponse = resourceProxy.addDocumentToDraftEnvelope(contentDisposition, envelopeId, document.getDocumentId()
             .toString(), fileDataSource.getFile());
         validateResponseAndReleaseConnection(clientResponse, EnvelopeException.class);
@@ -153,8 +165,8 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @throws EnvelopeException the envelope exception
      */
     public EnvelopeDetailInfo getEnvelope(final String envelopeId) throws EnvelopeException {
-        final ClientResponse<EnvelopeDetailInfo> clientResponse = resourceProxy.getEnvelope(envelopeId);
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+        final Response clientResponse = resourceProxy.getEnvelope(envelopeId);
+        return parseEntityFromResponse(clientResponse, EnvelopeDetailInfo.class, EnvelopeException.class);
     }
 
     /**
@@ -164,13 +176,11 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @return the string
      * @throws SignatureRequestException the signature request exception
      */
-    public String saveToDrafts(final Envelope envelope)
-        throws SignatureRequestException {
+    public String saveToDrafts(final Envelope envelope) throws SignatureRequestException {
         final MultipartFormDataOutput dataOut = generateMultipartFormDataOutput(envelope);
-        final ClientResponse<Map<String, String>> clientResponse = resourceProxy
-            .saveToDrafts(dataOut);
-        return parseEntityFromResponse(clientResponse,
-            SignatureRequestException.class).get("envelopeId");
+        final Response clientResponse = resourceProxy.saveToDrafts(dataOut);
+        return parseEntityFromResponse(clientResponse, String.class, SignatureRequestException.class);
+        // return parseEntityFromResponse(clientResponse, String.class, SignatureRequestException.class).get("envelopeId");
     }
 
     /**
@@ -179,21 +189,15 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @param envelope the envelope
      * @return the multipart form data output
      */
-    private MultipartFormDataOutput generateMultipartFormDataOutput(
-        final Envelope envelope) {
+    private MultipartFormDataOutput generateMultipartFormDataOutput(final Envelope envelope) {
         final MultipartFormDataOutput dataOut = new MultipartFormDataOutput();
-        dataOut.addFormData("request-type", "Save envelope as draft",
-            MediaType.APPLICATION_JSON_TYPE);
-        dataOut.addFormData("envelope_definition",
-            envelope, MediaType.APPLICATION_JSON_TYPE);
-        // metadataPart.getHeaders().putSingle(FieldName.CONTENT_DISPOSITION,
-        // "form-data");
+        dataOut.addFormData("request-type", "Save envelope as draft", MediaType.APPLICATION_JSON_TYPE);
+        dataOut.addFormData("envelope_definition", envelope, MediaType.APPLICATION_JSON_TYPE);
+        // metadataPart.getHeaders().putSingle(FieldName.CONTENT_DISPOSITION, "form-data");
         for (final DocumentInfo document : envelope.getDocuments()) {
             final FileDataSource dataSource = new FileDataSource(document.getPath());
-            final OutputPart filePart = dataOut.addFormData(document.getName(),
-                dataSource, MediaType.valueOf(dataSource.getContentType()));
-            filePart.getHeaders().putSingle(FieldName.CONTENT_DISPOSITION,
-                DocuSignUtils.getContentDispositionHeader(document));
+            final OutputPart filePart = dataOut.addFormData(document.getName(), dataSource, MediaType.valueOf(dataSource.getContentType()));
+            filePart.getHeaders().putSingle(FieldName.CONTENT_DISPOSITION, DocuSignUtils.getContentDispositionHeader(document));
         }
         return dataOut;
     }
@@ -207,9 +211,8 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      */
     public EnvelopeStatusResponse getEnvelopeStatus(
         final EnvelopeStatusQueryForm statusQueryForm) throws EnvelopeException {
-        final ClientResponse<EnvelopeStatusResponse> clientResponse = resourceProxy
-            .getEnvelopeStatus(statusQueryForm);
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+        final Response clientResponse = resourceProxy.getEnvelopeStatus(statusQueryForm);
+        return parseEntityFromResponse(clientResponse, EnvelopeStatusResponse.class, EnvelopeException.class);
     }
 
     /**
@@ -225,10 +228,9 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
         envelopeIds.add(envelopeId);
         final EnvelopeStatusQueryForm statusQueryForm = new EnvelopeStatusQueryForm();
         statusQueryForm.setEnvelopeIds(envelopeIds);
-        final ClientResponse<EnvelopeStatusResponse> clientResponse = resourceProxy
+        final Response clientResponse = resourceProxy
             .getEnvelopeStatus(statusQueryForm);
-        final EnvelopeStatusResponse statusResponse = parseEntityFromResponse(
-            clientResponse, EnvelopeException.class);
+        final EnvelopeStatusResponse statusResponse = parseEntityFromResponse(clientResponse, EnvelopeStatusResponse.class, EnvelopeException.class);
         if (statusResponse != null && statusResponse.getEnvelopes() != null
             && statusResponse.getEnvelopes().size() > 0) {
             return statusResponse.getEnvelopes().get(0);
@@ -243,11 +245,9 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @return the certificate
      * @throws EnvelopeException the envelope exception
      */
-    public DocumentFile getCertificate(final String envelopeId)
-        throws EnvelopeException {
-        final ClientResponse<DocumentFile> clientResponse = resourceProxy
-            .getCertificate(envelopeId, null, null);
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+    public DocumentFile getCertificate(final String envelopeId) throws EnvelopeException {
+        final Response clientResponse = resourceProxy.getCertificate(envelopeId, null, null);
+        return parseEntityFromResponse(clientResponse, DocumentFile.class, EnvelopeException.class);
     }
 
     /**
@@ -263,11 +263,9 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @return the certificate
      * @throws EnvelopeException the envelope exception
      */
-    public DocumentFile getCertificate(final String envelopeId, final Boolean watermark,
-        final Boolean certificate) throws EnvelopeException {
-        final ClientResponse<DocumentFile> clientResponse = resourceProxy
-            .getCertificate(envelopeId, watermark, certificate);
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+    public DocumentFile getCertificate(final String envelopeId, final Boolean watermark, final Boolean certificate) throws EnvelopeException {
+        final Response clientResponse = resourceProxy.getCertificate(envelopeId, watermark, certificate);
+        return parseEntityFromResponse(clientResponse, DocumentFile.class, EnvelopeException.class);
     }
 
     /**
@@ -277,11 +275,9 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @return the documents combined
      * @throws EnvelopeException the envelope exception
      */
-    public DocumentFile getDocumentsCombined(final String envelopeId)
-        throws EnvelopeException {
-        final ClientResponse<DocumentFile> clientResponse = resourceProxy
-            .getDocumentsCombined(envelopeId);
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+    public DocumentFile getDocumentsCombined(final String envelopeId) throws EnvelopeException {
+        final Response clientResponse = resourceProxy.getDocumentsCombined(envelopeId);
+        return parseEntityFromResponse(clientResponse, DocumentFile.class, EnvelopeException.class);
     }
 
     /**
@@ -291,11 +287,9 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @return the documents info
      * @throws EnvelopeException the envelope exception
      */
-    public EnvelopeDocumentInfo getDocumentsInfo(final String envelopeId)
-        throws EnvelopeException {
-        final ClientResponse<EnvelopeDocumentInfo> clientResponse = resourceProxy
-            .getDocumentsInfo(envelopeId);
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+    public EnvelopeDocumentInfo getDocumentsInfo(final String envelopeId) throws EnvelopeException {
+        final Response clientResponse = resourceProxy.getDocumentsInfo(envelopeId);
+        return parseEntityFromResponse(clientResponse, EnvelopeDocumentInfo.class, EnvelopeException.class);
     }
 
     /**
@@ -306,11 +300,9 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @return the document
      * @throws EnvelopeException the envelope exception
      */
-    public DocumentFile getDocument(final String envelopeId, final String documentId)
-        throws EnvelopeException {
-        final ClientResponse<DocumentFile> clientResponse = resourceProxy
-            .getDocument(envelopeId, documentId);
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+    public DocumentFile getDocument(final String envelopeId, final String documentId) throws EnvelopeException {
+        final Response clientResponse = resourceProxy.getDocument(envelopeId, documentId);
+        return parseEntityFromResponse(clientResponse, DocumentFile.class, EnvelopeException.class);
     }
 
     /**
@@ -320,13 +312,9 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @return the custom fields
      * @throws EnvelopeException the envelope exception
      */
-    public CustomFields getCustomFields(final String envelopeId)
-        throws EnvelopeException {
-        final ClientResponse<CustomFields> clientResponse = resourceProxy
-            .getCustomFields(envelopeId);
-        final CustomFields customFieldResponse = parseEntityFromResponse(
-            clientResponse, EnvelopeException.class);
-        return customFieldResponse;
+    public CustomFields getCustomFields(final String envelopeId) throws EnvelopeException {
+        final Response clientResponse = resourceProxy.getCustomFields(envelopeId);
+        return parseEntityFromResponse(clientResponse, CustomFields.class, EnvelopeException.class);
     }
 
     /**
@@ -337,10 +325,9 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @return the notification info
      * @throws EnvelopeException the envelope exception
      */
-    public EnvelopeNotificationInfo getNotificationInfo(final String envelopeId)
-        throws EnvelopeException {
-        final ClientResponse<EnvelopeNotificationInfo> clientResponse = resourceProxy.getNotificationInfo(envelopeId);
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+    public EnvelopeNotificationInfo getNotificationInfo(final String envelopeId) throws EnvelopeException {
+        final Response clientResponse = resourceProxy.getNotificationInfo(envelopeId);
+        return parseEntityFromResponse(clientResponse, EnvelopeNotificationInfo.class, EnvelopeException.class);
     }
 
     /**
@@ -350,10 +337,9 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @return the recipient status
      * @throws EnvelopeException the envelope exception
      */
-    public RecipientStatusCollection getRecipientStatus(final String envelopeId)
-        throws EnvelopeException {
-        final ClientResponse<RecipientStatusCollection> clientResponse = resourceProxy.getRecipientStatus(envelopeId, null, null);
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+    public RecipientStatusCollection getRecipientStatus(final String envelopeId) throws EnvelopeException {
+        final Response clientResponse = resourceProxy.getRecipientStatus(envelopeId, null, null);
+        return parseEntityFromResponse(clientResponse, RecipientStatusCollection.class, EnvelopeException.class);
     }
 
     /**
@@ -366,14 +352,12 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @return the recipient status
      * @throws EnvelopeException the envelope exception
      */
-    public RecipientStatusCollection getRecipientStatus(final String envelopeId,
-        final Boolean includeTabs, final Boolean includeExtended)
-            throws EnvelopeException {
-        final ClientResponse<RecipientStatusCollection> clientResponse = resourceProxy.getRecipientStatus(envelopeId, includeTabs,
-            includeExtended);
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+    public RecipientStatusCollection getRecipientStatus(final String envelopeId, final Boolean includeTabs, final Boolean includeExtended)
+        throws EnvelopeException {
+        final Response clientResponse = resourceProxy.getRecipientStatus(envelopeId, includeTabs, includeExtended);
+        return parseEntityFromResponse(clientResponse, RecipientStatusCollection.class, EnvelopeException.class);
     }
-    
+
     /**
      * Modify or Correct and Resend Recipient Information.
      * 
@@ -382,8 +366,8 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
      * @throws EnvelopeException the envelope exception
      */
     public RecipientUpdateResults resendEnvelope(final String envelopeId, final boolean resendEnvelope, final Signers signersList) throws EnvelopeException {
-        final ClientResponse<RecipientUpdateResults> clientResponse = resourceProxy.resendEnvelope(envelopeId, resendEnvelope, signersList);
-        return parseEntityFromResponse(clientResponse, EnvelopeException.class);
+        final Response clientResponse = resourceProxy.resendEnvelope(envelopeId, resendEnvelope, signersList);
+        return parseEntityFromResponse(clientResponse, RecipientUpdateResults.class, EnvelopeException.class);
     }
 
     /*

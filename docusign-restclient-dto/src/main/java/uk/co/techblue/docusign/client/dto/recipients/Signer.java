@@ -27,187 +27,212 @@ import uk.co.techblue.docusign.client.dto.DocumentTabCollection;
 import uk.co.techblue.docusign.client.dto.SignatureInfo;
 
 /**
- * Use this action if your recipient must sign, initial, date or add data to
- * form fields on the documents in the envelope.
+ * Use this action if your recipient must sign, initial, date or add data to form fields on the documents in the envelope.
  */
 @SuppressWarnings("serial")
 @JsonSerialize
 @JsonInclude(value = Include.NON_NULL)
 public class Signer extends Recipient {
-	/** The host email. */
-	@JsonProperty
-	private String email;
+    /** The host email. */
+    @JsonProperty
+    private String email;
 
-	/** The host name. */
-	@JsonProperty
-	private String name;
+    /** The host name. */
+    @JsonProperty
+    private String name;
 
-	/** The auto navigation. */
-	@JsonProperty
-	private Boolean autoNavigation;
+    /** The auto navigation. */
+    @JsonProperty
+    private Boolean autoNavigation;
 
-	/** The default recipient. */
-	@JsonProperty
-	private Boolean defaultRecipient;
+    /** The default recipient. */
+    @JsonProperty
+    private Boolean defaultRecipient;
 
-	/** The signature info. */
-	@JsonProperty
-	private SignatureInfo signatureInfo;
+    /** The signature info. */
+    @JsonProperty
+    private SignatureInfo signatureInfo;
 
-	/** The tabs. */
-	@JsonProperty
-	private DocumentTabCollection tabs;
+    /** The tabs. */
+    @JsonProperty
+    private DocumentTabCollection tabs;
 
-	/** Excluded documents. */
-	@JsonProperty
-	private List<String> excludedDocuments;
+    /** The can sign offline. */
+    @JsonProperty
+    private String canSignOffline;
 
+    /** Excluded documents. */
+    @JsonProperty
+    private List<String> excludedDocuments;
+
+    /** The letter ids. */
     @JsonIgnore
     private List<Long> letterIds;
 
-	/** 
-	 * Gets the list of excluded documents (list of IDs)
-	 * @return List of IDs of excluded documents
-	 */
-	public List<String> getExcludedDocuments() {
-		return excludedDocuments;
-	}
+    /**
+     * Gets the list of excluded documents (list of IDs)
+     * 
+     * @return List of IDs of excluded documents
+     */
+    public List<String> getExcludedDocuments() {
+        return excludedDocuments;
+    }
 
-	/** 
-	 * Sets the list of excluded documents (list of IDs)
-	 * @param excludedDocuments the list of IDs of the excluded documents
-	 */
-	public void setExcludedDocuments(List<String> excludedDocuments) {
-		this.excludedDocuments = excludedDocuments;
-	}
+    /**
+     * Sets the list of excluded documents (list of IDs)
+     * 
+     * @param excludedDocuments the list of IDs of the excluded documents
+     */
+    public void setExcludedDocuments(List<String> excludedDocuments) {
+        this.excludedDocuments = excludedDocuments;
+    }
 
-	/**
-	 * Gets the host email.
-	 * 
-	 * @return the host email
-	 */
-	public String getEmail() {
-		return email;
-	}
+    /**
+     * Gets the host email.
+     * 
+     * @return the host email
+     */
+    public String getEmail() {
+        return email;
+    }
 
-	/**
-	 * Specifies the email for the signing host. Required element for In Person
-	 * Signers recipient Type.
-	 * 
-	 * @param hostEmail
-	 *            the new host email
-	 */
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    /**
+     * Specifies the email for the signing host. Required element for In Person Signers recipient Type.
+     * 
+     * @param hostEmail the new host email
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	/**
-	 * Gets the host name.
-	 * 
-	 * @return the host name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Gets the host name.
+     * 
+     * @return the host name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Specifies the name of the signing host. Required element for In Person
-	 * Signers recipient Type.
-	 * 
-	 * 
-	 * @param hostName
-	 *            the new name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Specifies the name of the signing host. Required element for In Person Signers recipient Type.
+     * 
+     * 
+     * @param hostName the new name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * Gets the auto navigation.
-	 * 
-	 * @return the auto navigation
-	 */
-	public Boolean getAutoNavigation() {
-		return autoNavigation;
-	}
+    /**
+     * Gets the auto navigation.
+     * 
+     * @return the auto navigation
+     */
+    public Boolean getAutoNavigation() {
+        return autoNavigation;
+    }
 
-	/**
-	 * Specifies if the auto navigation setting is on or off for recipient.
-	 * 
-	 * 
-	 * @param autoNavigation
-	 *            the new auto navigation
-	 */
-	public void setAutoNavigation(Boolean autoNavigation) {
-		this.autoNavigation = autoNavigation;
-	}
+    /**
+     * Specifies if the auto navigation setting is on or off for recipient.
+     * 
+     * 
+     * @param autoNavigation the new auto navigation
+     */
+    public void setAutoNavigation(Boolean autoNavigation) {
+        this.autoNavigation = autoNavigation;
+    }
 
-	/**
-	 * Gets the default recipient.
-	 * 
-	 * @return the default recipient
-	 */
-	public Boolean getDefaultRecipient() {
-		return defaultRecipient;
-	}
+    /**
+     * Gets the default recipient.
+     * 
+     * @return the default recipient
+     */
+    public Boolean getDefaultRecipient() {
+        return defaultRecipient;
+    }
 
-	/**
-	 * If true, this is the default recipient for the envelope. This option is
-	 * used with the CreateEnvelopeFromTemplatesAnd Forms method.
-	 * 
-	 * 
-	 * @param defaultRecipient
-	 *            the new default recipient
-	 */
-	public void setDefaultRecipient(Boolean defaultRecipient) {
-		this.defaultRecipient = defaultRecipient;
-	}
+    /**
+     * If true, this is the default recipient for the envelope. This option is used with the CreateEnvelopeFromTemplatesAnd
+     * Forms method.
+     * 
+     * 
+     * @param defaultRecipient the new default recipient
+     */
+    public void setDefaultRecipient(Boolean defaultRecipient) {
+        this.defaultRecipient = defaultRecipient;
+    }
 
-	/**
-	 * Gets the signature info.
-	 * 
-	 * @return the signature info
-	 */
-	public SignatureInfo getSignatureInfo() {
-		return signatureInfo;
-	}
+    /**
+     * Gets the signature info.
+     * 
+     * @return the signature info
+     */
+    public SignatureInfo getSignatureInfo() {
+        return signatureInfo;
+    }
 
-	/**
-	 * Allows the sender to pre-specify the signature name, signature initials
-	 * and signature font used in the signature stamp for the recipient.
-	 * 
-	 * 
-	 * @param signatureInfo
-	 *            the new signature info
-	 */
-	public void setSignatureInfo(SignatureInfo signatureInfo) {
-		this.signatureInfo = signatureInfo;
-	}
+    /**
+     * Allows the sender to pre-specify the signature name, signature initials and signature font used in the signature stamp
+     * for the recipient.
+     * 
+     * 
+     * @param signatureInfo the new signature info
+     */
+    public void setSignatureInfo(SignatureInfo signatureInfo) {
+        this.signatureInfo = signatureInfo;
+    }
 
-	/**
-	 * Gets the tabs.
-	 * 
-	 * @return the tabs
-	 */
-	public DocumentTabCollection getTabs() {
-		return tabs;
-	}
+    /**
+     * Gets the tabs.
+     * 
+     * @return the tabs
+     */
+    public DocumentTabCollection getTabs() {
+        return tabs;
+    }
 
-	/**
-	 * Only used with recipient types In Person Signers and Signers. Specifies
-	 * the Tabs associated with the recipient.
-	 * 
-	 * @param tabs
-	 *            the new tabs
-	 */
-	public void setTabs(DocumentTabCollection tabs) {
-		this.tabs = tabs;
-	}
-	
-	public List<Long> getLetterIds() {
+    /**
+     * Only used with recipient types In Person Signers and Signers. Specifies the Tabs associated with the recipient.
+     * 
+     * @param tabs the new tabs
+     */
+    public void setTabs(DocumentTabCollection tabs) {
+        this.tabs = tabs;
+    }
+
+    /**
+     * Gets the can sign offline.
+     *
+     * @return the can sign offline
+     */
+    public String getCanSignOffline() {
+        return canSignOffline;
+    }
+
+    /**
+     * Sets the can sign offline.
+     *
+     * @param canSignOffline the new can sign offline
+     */
+    public void setCanSignOffline(String canSignOffline) {
+        this.canSignOffline = canSignOffline;
+    }
+
+    /**
+     * Gets the letter ids.
+     *
+     * @return the letter ids
+     */
+    public List<Long> getLetterIds() {
         return letterIds;
     }
 
+    /**
+     * Sets the letter ids.
+     *
+     * @param letterIds the new letter ids
+     */
     public void setLetterIds(final List<Long> letterIds) {
         this.letterIds = letterIds;
     }

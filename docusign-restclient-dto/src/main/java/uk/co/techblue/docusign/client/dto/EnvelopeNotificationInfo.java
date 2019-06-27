@@ -1,17 +1,6 @@
 /*******************************************************************************
- * Copyright 2012 Technology Blueprint Ltd
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2018, Techblue Software Pvt Ltd. All Rights Reserved.
+ * No part of this content may be used without Techblue's express consent.
  ******************************************************************************/
 package uk.co.techblue.docusign.client.dto;
 
@@ -19,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * The Class EnvelopeNotificationInfo.
  */
@@ -26,54 +16,72 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonInclude(value = Include.NON_NULL)
 public class EnvelopeNotificationInfo extends BaseDto {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5805391762394797959L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = -5805391762394797959L;
 
-	/** The expirations. */
-	@JsonProperty
-	private EnvelopeExpiration expirations;
+    /** The use account defaults. */
+    @JsonProperty
+    private Boolean useAccountDefaults = Boolean.TRUE;
 
-	/** The reminders. */
-	@JsonProperty
-	private EnvelopeReminder reminders;
+    /** The expirations. */
+    @JsonProperty
+    private EnvelopeExpiration expirations;
 
-	/**
-	 * Gets the expirations.
-	 * 
-	 * @return the expirations
-	 */
-	public EnvelopeExpiration getExpirations() {
-		return expirations;
-	}
+    /** The reminders. */
+    @JsonProperty
+    private EnvelopeReminder reminders;
 
-	/**
-	 * Sets the expirations.
-	 * 
-	 * @param expirations
-	 *            the new expirations
-	 */
-	public void setExpirations(EnvelopeExpiration expirations) {
-		this.expirations = expirations;
-	}
+    /**
+     * Checks if is use account defaults.
+     *
+     * @return true, if is use account defaults
+     */
+    public boolean isUseAccountDefaults() {
+        return useAccountDefaults;
+    }
 
-	/**
-	 * Gets the reminders.
-	 * 
-	 * @return the reminders
-	 */
-	public EnvelopeReminder getReminders() {
-		return reminders;
-	}
+    /**
+     * Sets the use account defaults.
+     *
+     * @param useAccountDefaults the new use account defaults
+     */
+    public void setUseAccountDefaults(boolean useAccountDefaults) {
+        this.useAccountDefaults = useAccountDefaults;
+    }
 
-	/**
-	 * Sets the reminders.
-	 * 
-	 * @param reminders
-	 *            the new reminders
-	 */
-	public void setReminders(EnvelopeReminder reminders) {
-		this.reminders = reminders;
-	}
+    /**
+     * Gets the expirations.
+     * 
+     * @return the expirations
+     */
+    public EnvelopeExpiration getExpirations() {
+        return expirations;
+    }
+
+    /**
+     * Sets the expirations.
+     * 
+     * @param expirations the new expirations
+     */
+    public void setExpirations(EnvelopeExpiration expirations) {
+        this.expirations = expirations;
+    }
+
+    /**
+     * Gets the reminders.
+     * 
+     * @return the reminders
+     */
+    public EnvelopeReminder getReminders() {
+        return reminders;
+    }
+
+    /**
+     * Sets the reminders.
+     * 
+     * @param reminders the new reminders
+     */
+    public void setReminders(EnvelopeReminder reminders) {
+        this.reminders = reminders;
+    }
 }

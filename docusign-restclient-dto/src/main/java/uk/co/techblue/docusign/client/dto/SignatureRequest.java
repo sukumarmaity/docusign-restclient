@@ -52,7 +52,7 @@ public abstract class SignatureRequest extends BaseDto {
 
     /** The enable wet sign. */
     @JsonProperty
-    private Boolean enableWetSign;
+    private Boolean enableWetSign = Boolean.FALSE;
 
     /**
      * Gets the email blurb.

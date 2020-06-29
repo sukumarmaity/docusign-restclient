@@ -1,17 +1,6 @@
 /*******************************************************************************
- * Copyright 2012 Technology Blueprint Ltd
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2018, Techblue Software Pvt Ltd. All Rights Reserved.
+ * No part of this content may be used without Techblue's express consent.
  ******************************************************************************/
 package uk.co.techblue.docusign.client.services;
 
@@ -368,6 +357,19 @@ public class EnvelopeService extends BaseService<EnvelopeResource> {
     public RecipientUpdateResults resendEnvelope(final String envelopeId, final boolean resendEnvelope, final Signers signersList) throws EnvelopeException {
         final Response clientResponse = resourceProxy.resendEnvelope(envelopeId, resendEnvelope, signersList);
         return parseEntityFromResponse(clientResponse, RecipientUpdateResults.class, EnvelopeException.class);
+    }
+    
+    /**
+     * Gets the recipient signature.
+     *
+     * @param envelopeId the envelope id
+     * @param recipientId the recipient id
+     * @return the recipient signature
+     * @throws EnvelopeException the envelope exception
+     */
+    public String getRecipientSignature(final String envelopeId, final String recipientId) throws EnvelopeException {
+        final Response clientResponse = resourceProxy.getRecipientSignature(envelopeId, recipientId);
+        return parseEntityFromResponse(clientResponse, String.class, EnvelopeException.class);
     }
 
     /*

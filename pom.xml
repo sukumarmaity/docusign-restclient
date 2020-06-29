@@ -49,12 +49,12 @@
 	</repositories>
 	<distributionManagement>
 		<repository>
-			<id>techblue-nexus-release</id>
+			<id>techblue-release</id>
 			<name>Releases</name>
 			<url>${techblue.maven.repo.baseurl}/releases</url>
 		</repository>
 		<snapshotRepository>
-			<id>techblue-nexus-snapshot</id>
+			<id>techblue-snapshot</id>
 			<name>Snapshots</name>
 			<url>${techblue.maven.repo.baseurl}/snapshots</url>
 		</snapshotRepository>

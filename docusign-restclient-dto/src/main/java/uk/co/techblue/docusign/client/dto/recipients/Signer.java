@@ -68,6 +68,9 @@ public class Signer extends Recipient {
     /** The letter ids. */
     @JsonIgnore
     private List<Long> letterIds;
+    
+    @JsonProperty("clientUserId")
+    private String clientUserId;
 
     /**
      * Gets the list of excluded documents (list of IDs)
@@ -235,5 +238,13 @@ public class Signer extends Recipient {
      */
     public void setLetterIds(final List<Long> letterIds) {
         this.letterIds = letterIds;
+    }
+
+    public String getClientUserId() {
+        return clientUserId;
+    }
+
+    public void setClientUserId(String clientUserId) {
+        this.clientUserId = clientUserId;
     }
 }

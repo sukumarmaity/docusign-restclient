@@ -49,7 +49,7 @@
 	</repositories>
 	<distributionManagement>
 		<repository>
-			<id>techblue-nexus-release</id>
+			<id>techblue-release</id>
 			<name>Releases</name>
 			<url>${techblue.maven.repo.baseurl}/releases</url>
 		</repository>
